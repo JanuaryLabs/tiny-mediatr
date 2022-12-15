@@ -1,4 +1,4 @@
-import { ServiceCollection, ServiceType } from "tiny-injector";
+import { Injector, ServiceCollection, ServiceType } from "tiny-injector";
 import { IRequest } from "./request";
 export abstract class RequestHandlerBase {
 	public abstract handle(
@@ -19,5 +19,6 @@ export function RequestHandler(
 ): ClassDecorator {
 	return (object) => {
 		const handler = object as ServiceType<any>;
+		Injector.AddTransient(request as any, handler as any);
 	};
 }

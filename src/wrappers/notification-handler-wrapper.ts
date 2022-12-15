@@ -1,34 +1,48 @@
-import { ServiceProvider } from "tiny-injector";
+import {
+	Injectable,
+	Injector,
+	ServiceLifetime,
+	ServiceType,
+} from "tiny-injector";
 import { INotification } from "../notification";
 import { INotificationHandler } from "../notification-handler";
 
 type Handler = (notification: INotification) => Promise<void>;
 
-export abstract class NotificationHandlerWrapper {
+export abstract class INotificationHandlerWrapper {
 	public abstract handle(
 		notification: INotification,
-		serviceFactory: ServiceProvider,
 		publish: (handlers: Handler[], notification: INotification) => Promise<void>
 	): Promise<void>;
 }
 
+@Injectable({
+	lifetime: ServiceLifetime.Transient,
+	serviceType: INotificationHandlerWrapper,
+})
 export class NotificationHandlerWrapperImpl<
 	TNotification extends INotification
-> extends NotificationHandlerWrapper {
+> extends INotificationHandlerWrapper {
 	public handle(
 		notification: TNotification,
-		serviceFactory: ServiceProvider,
 		publish: (handlers: Handler[], notification: INotification) => Promise<void>
 	): Promise<void> {
-		const handlers: Handler[] = serviceFactory
-			.GetServices<INotificationHandler<TNotification>>(
-				INotificationHandler<TNotification>
-			)
-			.map(
-				(x) => (theNotification: INotification) =>
-					x.handle(theNotification as TNotification)
-			);
+		const notificationType = notification.constructor;
+		const handlers: Handler[] = Injector.GetServices<
+			INotificationHandler<TNotification>
+		>(notificationType).map(
+			(x) => (theNotification: INotification) =>
+				x.handle(theNotification as TNotification)
+		);
 
 		return publish(handlers, notification);
 	}
+}
+export function NotificationHandler(
+	request: ServiceType<INotification>
+): ClassDecorator {
+	return (object) => {
+		const handler = object as ServiceType<any>;
+		Injector.AppendTransient(request as any, handler as any);
+	};
 }

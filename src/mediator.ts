@@ -2,10 +2,10 @@ import { Injector } from "tiny-injector";
 import { ArgumentNullException } from "./exceptions/ArgumentException";
 import { INotification } from "./notification";
 import { IRequest } from "./request";
-import { RequestHandlerBase } from "./request-handler";
+import { IRequestHandler, RequestHandlerBase } from "./request-handler";
 import { RequestType } from "./types";
 import { isNullOrUndefined } from "./utils";
-import { NotificationHandlerWrapper } from "./wrappers/notification-handler-wrapper";
+import { INotificationHandlerWrapper } from "./wrappers/notification-handler-wrapper";
 interface ISender {
 	send<TResponse>(request: IRequest<TResponse>): Promise<TResponse>;
 }
@@ -18,12 +18,13 @@ export class Mediator implements ISender {
 	> = new WeakMap();
 	private static readonly _notificationHandlers: WeakMap<
 		RequestType<IRequest<any>>,
-		NotificationHandlerWrapper
+		INotificationHandlerWrapper
 	> = new WeakMap();
 	// private static readonly _streamRequestHandlers: WeakMap<
 	// 	RequestType<IRequest<any>>,
 	// 	StreamRequestHandlerBase
 	// > = new WeakMap();
+
 	send<TResponse>(request: IRequest<TResponse>): Promise<TResponse> {
 		if (isNullOrUndefined(request)) {
 			throw new ArgumentNullException("request");
@@ -31,18 +32,30 @@ export class Mediator implements ISender {
 
 		const requestType = request.constructor;
 
-		const handler = Injector.GetRequiredService(requestType, this._context);
+		const handler =
+			Injector.GetRequiredService<
+				IRequestHandler<IRequest<TResponse>, TResponse>
+			>(requestType);
 
-		return getOrAdd(Mediator.#requestHandlers, requestType, handler);
+		return handler.handle(request);
 	}
 
-	publish(notification: INotification) {
-		const notificationType = notification.constructor;
-		const handler = Injector.GetRequiredService(
-			notificationType,
-			this._context
+	public async publish<TNotification extends INotification>(
+		notification: TNotification
+	): Promise<void> {
+		if (isNullOrUndefined(notification)) {
+			throw new ArgumentNullException("request");
+		}
+
+		const handler = Injector.GetRequiredService<INotificationHandlerWrapper>(
+			INotificationHandlerWrapper
 		);
-		return getOrAdd(Mediator.#requestHandlers, notificationType, handler);
+
+		return handler.handle(notification, async (handlers, notification) => {
+			for (const item of handlers) {
+				await item(notification);
+			}
+		});
 	}
 }
 
