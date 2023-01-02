@@ -1,18 +1,16 @@
-import {
-	Injectable,
-	Injector,
-	ServiceLifetime,
-	ServiceType,
-} from "tiny-injector";
-import { INotification } from "../notification";
-import { INotificationHandler } from "../notification-handler";
+import { Context, Injectable, Injector, ServiceLifetime } from "tiny-injector";
+import { INotification, INotificationHandler } from "../notification";
 
-type Handler = (notification: INotification) => Promise<void>;
-
-export abstract class INotificationHandlerWrapper {
+export abstract class INotificationHandlerWrapper<
+	TNotification extends INotification
+> {
 	public abstract handle(
-		notification: INotification,
-		publish: (handlers: Handler[], notification: INotification) => Promise<void>
+		notification: TNotification,
+		context: Context,
+		publish: (
+			handlers: INotificationHandler<TNotification>[],
+			notification: INotification
+		) => Promise<void>
 	): Promise<void>;
 }
 
@@ -22,27 +20,23 @@ export abstract class INotificationHandlerWrapper {
 })
 export class NotificationHandlerWrapperImpl<
 	TNotification extends INotification
-> extends INotificationHandlerWrapper {
+> extends INotificationHandlerWrapper<TNotification> {
 	public handle(
 		notification: TNotification,
-		publish: (handlers: Handler[], notification: INotification) => Promise<void>
+		context: Context,
+		publish: (
+			handlers: INotificationHandler<TNotification>[],
+			notification: INotification
+		) => Promise<void>
 	): Promise<void> {
 		const notificationType = notification.constructor;
-		const handlers: Handler[] = Injector.GetServices<
-			INotificationHandler<TNotification>
-		>(notificationType).map(
-			(x) => (theNotification: INotification) =>
-				x.handle(theNotification as TNotification)
-		);
+
+		const handlers: INotificationHandler<TNotification>[] =
+			Injector.GetServices<INotificationHandler<TNotification>>(
+				notificationType,
+				context
+			);
 
 		return publish(handlers, notification);
 	}
-}
-export function NotificationHandler(
-	request: ServiceType<INotification>
-): ClassDecorator {
-	return (object) => {
-		const handler = object as ServiceType<any>;
-		Injector.AppendTransient(request as any, handler as any);
-	};
 }

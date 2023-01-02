@@ -1,6 +1,6 @@
 export * from "./mediator";
+export * from "./notification";
 export * from "./request";
-export * from "./request-handler";
 
 // interface VM {}
 // class ListQuery extends IRequest<VM> {}

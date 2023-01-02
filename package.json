@@ -16,7 +16,7 @@
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
-	"dependencies": {
+	"peerDependencies": {
 		"tiny-injector": "^0.1.1"
 	},
 	"devDependencies": {

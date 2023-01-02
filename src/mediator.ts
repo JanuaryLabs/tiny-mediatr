@@ -1,61 +1,59 @@
-import { Injector } from "tiny-injector";
+import { Context, Injectable, Injector } from "tiny-injector";
 import { ArgumentNullException } from "./exceptions/ArgumentException";
-import { INotification } from "./notification";
+import { INotification, INotificationHandler } from "./notification";
 import { IRequest } from "./request";
-import { IRequestHandler, RequestHandlerBase } from "./request-handler";
 import { RequestType } from "./types";
 import { isNullOrUndefined } from "./utils";
 import { INotificationHandlerWrapper } from "./wrappers/notification-handler-wrapper";
+import { RequestHandlerWrapper } from "./wrappers/request-handler-wrapper";
 interface ISender {
 	send<TResponse>(request: IRequest<TResponse>): Promise<TResponse>;
 }
 
+@Injectable()
 export class Mediator implements ISender {
-	private _context = Injector.Create();
-	static readonly #requestHandlers: WeakMap<
-		RequestType<IRequest<any>>,
-		RequestHandlerBase
-	> = new WeakMap();
-	private static readonly _notificationHandlers: WeakMap<
-		RequestType<IRequest<any>>,
-		INotificationHandlerWrapper
-	> = new WeakMap();
-	// private static readonly _streamRequestHandlers: WeakMap<
-	// 	RequestType<IRequest<any>>,
-	// 	StreamRequestHandlerBase
-	// > = new WeakMap();
+	constructor(private context: Context) {}
 
-	send<TResponse>(request: IRequest<TResponse>): Promise<TResponse> {
+	public send<TResponse>(request: IRequest<TResponse>): Promise<TResponse> {
 		if (isNullOrUndefined(request)) {
 			throw new ArgumentNullException("request");
 		}
 
 		const requestType = request.constructor;
 
-		const handler =
-			Injector.GetRequiredService<
-				IRequestHandler<IRequest<TResponse>, TResponse>
-			>(requestType);
+		const handler = Injector.GetRequiredService<
+			RequestHandlerWrapper<TResponse>
+		>(requestType, this.context);
 
-		return handler.handle(request);
+		return handler.handle(request, this.context);
 	}
 
 	public async publish<TNotification extends INotification>(
 		notification: TNotification
 	): Promise<void> {
 		if (isNullOrUndefined(notification)) {
-			throw new ArgumentNullException("request");
+			throw new ArgumentNullException("notification");
 		}
 
-		const handler = Injector.GetRequiredService<INotificationHandlerWrapper>(
-			INotificationHandlerWrapper
-		);
+		const handler = Injector.GetRequiredService<
+			INotificationHandlerWrapper<TNotification>
+		>(INotificationHandlerWrapper);
 
-		return handler.handle(notification, async (handlers, notification) => {
-			for (const item of handlers) {
-				await item(notification);
-			}
-		});
+		return handler.handle(
+			notification,
+			this.context,
+			async (handlers, notification) =>
+				this.publishCore(handlers, notification as TNotification)
+		);
+	}
+
+	protected async publishCore<TNotification extends INotification>(
+		handlers: INotificationHandler<TNotification>[],
+		notification: TNotification
+	) {
+		for (const item of handlers) {
+			await item.handle(notification);
+		}
 	}
 }
 
