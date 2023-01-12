@@ -1,5 +1,5 @@
 export abstract class IRequest<T = void> {
-	#typeMatcher: any;
+	// #typeMatcher: any; https://github.com/microsoft/TypeScript/issues/18499
 }
 
 import { Injector, ServiceType } from "tiny-injector";

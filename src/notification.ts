@@ -1,7 +1,7 @@
 import { Injector, ServiceType } from "tiny-injector";
 
 export abstract class INotification {
-	#typeMatcher: any;
+	// #typeMatcher: any; https://github.com/microsoft/TypeScript/issues/18499
 }
 
 export abstract class INotificationHandler<
