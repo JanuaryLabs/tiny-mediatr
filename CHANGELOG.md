@@ -1,5 +1,12 @@
 
 
+### [0.0.4](https://github.com/faslh/tiny-mediatr.git/compare/0.0.3...0.0.4) (2023-01-13)
+
+
+### Bug Fixes
+
+* default pipeline not returning the request response ([1df34cc](https://github.com/faslh/tiny-mediatr.git/commit/1df34cc3ae5ef0309180778115186e6a2e9ed180))
+
 ### [0.0.3](https://github.com/faslh/tiny-mediatr.git/compare/0.0.2...0.0.3) (2023-01-13)
 
 
