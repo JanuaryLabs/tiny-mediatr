@@ -24,11 +24,13 @@ export class RequestHandlerWrapperImpl<
 		request: IRequest<TResponse>,
 		context: Context
 	): Promise<TResponse> {
-		const handler: RequestHandlerDelegate<TResponse> = () =>
-			Injector.GetRequiredService<IRequestHandler<TRequest, TResponse>>(
-				IRequestHandler<TRequest, TResponse>,
+		const handler: RequestHandlerDelegate<TResponse> = () => {
+			const requestType = request.constructor;
+			return Injector.GetRequiredService<IRequestHandler<TRequest, TResponse>>(
+				requestType,
 				context
 			).handle(request as TRequest);
+		};
 
 		return Injector.GetServices<IPipelineBehavior<TRequest, TResponse>>(
 			IPipelineBehavior<TRequest, TResponse>,

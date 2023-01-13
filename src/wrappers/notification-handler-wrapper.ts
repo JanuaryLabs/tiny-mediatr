@@ -15,7 +15,7 @@ export abstract class INotificationHandlerWrapper<
 }
 
 @Injectable({
-	lifetime: ServiceLifetime.Transient,
+	lifetime: ServiceLifetime.Scoped,
 	serviceType: INotificationHandlerWrapper,
 })
 export class NotificationHandlerWrapperImpl<

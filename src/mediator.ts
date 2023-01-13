@@ -1,6 +1,7 @@
-import { Context, Injectable, Injector } from "tiny-injector";
+import { Context, Injectable, Injector, ServiceLifetime } from "tiny-injector";
 import { ArgumentNullException } from "./exceptions/ArgumentException";
 import { INotification, INotificationHandler } from "./notification";
+import { IPipelineBehavior, RequestHandlerDelegate } from "./pipeline-behavior";
 import { IRequest } from "./request";
 import { RequestType } from "./types";
 import { isNullOrUndefined } from "./utils";
@@ -19,12 +20,9 @@ export class Mediator implements ISender {
 			throw new ArgumentNullException("request");
 		}
 
-		const requestType = request.constructor;
-
 		const handler = Injector.GetRequiredService<
 			RequestHandlerWrapper<TResponse>
-		>(requestType, this.context);
-
+		>(RequestHandlerWrapper, this.context);
 		return handler.handle(request, this.context);
 	}
 
@@ -37,7 +35,7 @@ export class Mediator implements ISender {
 
 		const handler = Injector.GetRequiredService<
 			INotificationHandlerWrapper<TNotification>
-		>(INotificationHandlerWrapper);
+		>(INotificationHandlerWrapper, this.context);
 
 		return handler.handle(
 			notification,
@@ -66,4 +64,17 @@ function getOrAdd(
 		return map.set(key, value);
 	}
 	return map.get(key);
+}
+
+@Injectable({
+	serviceType: IPipelineBehavior,
+	lifetime: ServiceLifetime.Scoped,
+})
+class DefaultPipeline extends IPipelineBehavior<any, any> {
+	public async handle(
+		request: any,
+		next: RequestHandlerDelegate<any>
+	): Promise<any> {
+		await next();
+	}
 }
