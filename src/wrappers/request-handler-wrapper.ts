@@ -38,7 +38,7 @@ export class RequestHandlerWrapperImpl<
 		)
 			.reverse()
 			.reduce(
-				(acc, pipeline) => () => pipeline.handle(request as TRequest, acc),
+				(next, pipeline) => () => pipeline.handle(request as TRequest, next),
 				() => handler()
 			)();
 	}

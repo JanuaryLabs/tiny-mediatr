@@ -75,6 +75,6 @@ class DefaultPipeline extends IPipelineBehavior<any, any> {
 		request: any,
 		next: RequestHandlerDelegate<any>
 	): Promise<any> {
-		await next();
+		return next();
 	}
 }
