@@ -1,5 +1,12 @@
 
 
+### [0.0.3](https://github.com/faslh/tiny-mediatr.git/compare/0.0.2...0.0.3) (2023-01-13)
+
+
+### Bug Fixes
+
+* add default pipeline to execute requests ([0d9d663](https://github.com/faslh/tiny-mediatr.git/commit/0d9d663fb84864735513f741b3b3f958254cd0fa))
+
 ### [0.0.2](https://github.com/faslh/tiny-mediatr.git/compare/0.0.1...0.0.2) (2023-01-12)
 
 
