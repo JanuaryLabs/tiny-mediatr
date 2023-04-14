@@ -33,9 +33,8 @@ import {
 import { Context } from "tiny-injector";
 
 describe("ExampleRequestHandler", () => {
-	const context = new Context();
-
 	it("should work with the mediator", async () => {
+		const context = new Context();
 		const mediator = Injector.GetRequiredService(Mediator, context);
 		const request = new ExampleRequest("Bob");
 
@@ -79,10 +78,9 @@ import { Context } from "tiny-injector";
 import { Mediator } from "tiny-mediatr";
 
 describe("ExampleNotificationHandler", () => {
-	const context = new Context();
-
 	it("should log the message from the notification", async () => {
 		// Arrange
+		const context = new Context();
 		const mediator = Injector.GetRequiredService(Mediator, context);
 		const notification = new ExampleNotification("Hello, Alice!");
 
@@ -97,6 +95,149 @@ describe("ExampleNotificationHandler", () => {
 
 		// Clean up the spy
 		consoleSpy.mockRestore();
+	});
+});
+```
+
+Great, let's create another example for testing Pipeline Behaviors.
+
+Suppose we have the following Pipeline Behavior that logs each request and response:
+
+```ts
+// pipelineBehaviors/LoggingPipelineBehavior.ts
+
+import { IPipelineBehavior, IRequest } from "tiny-mediatr";
+import { Injectable } from "tiny-injector";
+
+@Injectable()
+export class LoggingPipelineBehavior<
+	TRequest extends IRequest<TResponse>,
+	TResponse
+> implements IPipelineBehavior<TRequest, TResponse>
+{
+	async handle(
+		request: TRequest,
+		next: () => Promise<TResponse>
+	): Promise<TResponse> {
+		console.log(`Handling request of type ${request.constructor.name}`);
+		const response = await next();
+		console.log(
+			`Handled request of type ${request.constructor.name}. Response:`,
+			response
+		);
+		return response;
+	}
+}
+
+Injector.AppendScoped(IPipelineBehavior, LoggingPipelineBehavior);
+```
+
+To test this Pipeline Behavior with Jest, create a test file:
+
+```ts
+// tests/LoggingPipelineBehavior.test.ts
+
+import {
+	ExampleRequest,
+	ExampleRequestHandler,
+} from "../handlers/ExampleRequestHandler";
+import { Context } from "tiny-injector";
+import { LoggingPipelineBehavior } from "../pipelineBehaviors/LoggingPipelineBehavior";
+import { Mediator } from "tiny-mediatr";
+
+describe("LoggingPipelineBehavior", () => {
+	it("should log requests and responses", async () => {
+		// Arrange
+		const context = new Context();
+		const mediator = Injector.GetRequiredService(Mediator, context);
+		const request = new ExampleRequest("Alice");
+
+		// Use jest.spyOn to track console.log calls
+		const consoleSpy = jest.spyOn(console, "log");
+
+		// Act
+		const response = await mediator.send(request);
+
+		// Assert
+		expect(consoleSpy).toHaveBeenCalledWith(
+			`Handling request of type ${ExampleRequest.name}`
+		);
+		expect(consoleSpy).toHaveBeenCalledWith(
+			`Handled request of type ${ExampleRequest.name}. Response:`,
+			response
+		);
+
+		// Clean up the spy and remove the behavior
+		consoleSpy.mockRestore();
+	});
+});
+```
+
+Let's create one more example for testing with a Pipeline Behavior.
+
+Suppose we have a Pipeline Behavior that transforms the request before it's handled:
+
+```ts
+// pipelineBehaviors/TransformingPipelineBehavior.ts
+
+import { IPipelineBehavior, IRequest } from "tiny-mediatr";
+import { Injectable } from "tiny-injector";
+
+@Injectable()
+export class TransformingPipelineBehavior<
+	TRequest extends IRequest<TResponse>,
+	TResponse
+> implements IPipelineBehavior<TRequest, TResponse>
+{
+	async handle(
+		request: TRequest,
+		next: () => Promise<TResponse>
+	): Promise<TResponse> {
+		// Cast the request to a known type and transform it
+		const transformedRequest = request as ExampleRequest;
+		transformedRequest.name = transformedRequest.name.toUpperCase();
+
+		// Call the next behavior or the handler
+		const response = await next();
+
+		return response;
+	}
+}
+Injector.AppendScoped(IPipelineBehavior, LoggingPipelineBehavior);
+```
+
+To test this Pipeline Behavior with Jest, create a test file:
+
+```ts
+// tests/TransformingPipelineBehavior.test.ts
+
+import {
+	ExampleRequest,
+	ExampleRequestHandler,
+} from "../handlers/ExampleRequestHandler";
+import { Context } from "tiny-injector";
+import { TransformingPipelineBehavior } from "../pipelineBehaviors/TransformingPipelineBehavior";
+import { Mediator } from "tiny-mediatr";
+
+describe("TransformingPipelineBehavior", () => {
+	it("should transform the request before handling it", async () => {
+		// Arrange
+
+		const context = new Context();
+		const mediator = Injector.GetRequiredService(Mediator, context);
+		const request = new ExampleRequest("Alice");
+
+		// Act
+		const response = await mediator.send(request);
+
+		// Assert
+		expect(response).toEqual("Hello, ALICE!");
+
+		// Clean up and remove the behavior
+		mediator.pipelineBehaviors.splice(
+			mediator.pipelineBehaviors.indexOf(behavior),
+			1
+		);
 	});
 });
 ```

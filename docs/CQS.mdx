@@ -1,0 +1,118 @@
+# CQS
+
+CQS is a powerful concept that ensures our software is both scalable and maintainable. It divides our application into two distinct parts: commands that modify state, and queries that retrieve state. By doing so, we can achieve a clear separation of concerns and avoid potential conflicts that might arise when modifying state and retrieving it simultaneously.
+
+Tiny MediatR adheres to the CQS principle by design. Our library provides you with two types of objects: requests and notifications. Requests are used to modify the application's state, while notifications are used to inform interested parties about events. This division of labor ensures that our code remains clean and follows best practices.
+
+Using Tiny MediatR, you can easily create request and notification objects, and then send or publish them to the appropriate handlers. The handlers, in turn, carry out the request or notification's intended actions, and return the appropriate response.
+
+By following the CQS principle, Tiny MediatR helps to ensure that your code is clear, concise, and easy to maintain.
+
+## Naming
+
+In the CQS pattern, the naming of classes, methods, and properties is essential for readability and maintainability. A clear and consistent naming convention makes it easier for developers to understand the purpose and intent of the code.
+
+When defining commands, queries, and handlers in Tiny MediatR, it is recommended to follow these naming conventions:
+
+Commands should be named in the imperative form with a verb as the first word, such as CreateOrderCommand or DeleteUserCommand.
+
+Queries should be named in the interrogative form with a noun or noun phrase as the first word, such as GetUserQuery or GetAllOrdersQuery.
+
+Handlers should be named with the command or query name followed by the word "Handler," such as CreateOrderCommandHandler or GetUserQueryHandler.
+
+Properties and methods should be named according to their purpose and the conventions of the language.
+
+By following these conventions, you can create a clear and consistent naming structure that makes it easier for developers to understand the intent of the code. This can improve the readability and maintainability of your application and help prevent bugs and errors.
+
+## Example
+
+### Commands
+
+```ts
+import { Command, ICommandHandler } from "tiny-mediatr";
+
+// Define a command
+export class CreateProductCommand implements Command {
+	constructor(public name: string, public price: number) {}
+}
+
+// Define a command handler
+@RequestHandler(CreateProductCommand)
+export class CreateProductCommandHandler
+	implements ICommandHandler<CreateProductCommand>
+{
+	public async handle(command: CreateProductCommand): Promise<void> {
+		// Create product in the database
+		const product = await createProduct(command.name, command.price);
+
+		// Publish an event to notify subscribers
+		await mediator.publish(new ProductCreatedEvent(product));
+	}
+}
+
+// Define an event
+export class ProductCreatedEvent {
+	constructor(public product: Product) {}
+}
+
+// Define an event handler
+@NotificationHandler(ProductCreatedEvent)
+export class ProductCreatedEventHandler
+	implements INotificationHandler<ProductCreatedEvent>
+{
+	public async handle(event: ProductCreatedEvent): Promise<void> {
+		// Notify users of the new product
+		const users = await getUsers();
+		users.forEach((user) => {
+			user.notify(event.product);
+		});
+	}
+}
+
+// Register the handlers with Tiny MediatR
+
+// Send a command to create a product
+const createProductCommand = new CreateProductCommand("Example Product", 9.99);
+await mediator.send(createProductCommand);
+```
+
+In this example, we've defined a CreateProductCommand which represents the intent to create a new product. We've also defined a ProductCreatedEvent which represents the fact that a new product was created. We've created corresponding command and event handlers (CreateProductCommandHandler and ProductCreatedEventHandler) to handle these messages.
+
+When a CreateProductCommand is sent to the mediator using mediator.send, the corresponding command handler is executed. This handler creates a new product in the database and then publishes a ProductCreatedEvent using mediator.publish.
+
+The ProductCreatedEventHandler is then executed to notify subscribers of the new product. In this example, we've assumed that getSubscribers() returns a list of objects with a notify method which accepts a Product.
+
+By using CQS naming conventions, we've created a clear separation between the intent to create a product (CreateProductCommand) and the fact that a product was created (ProductCreatedEvent). This makes our code easier to reason about and test.
+
+### Queries
+
+```ts
+// Query
+export class GetProductsQuery implements IQuery<Product[]> {
+	constructor(public readonly categoryId: number) {}
+}
+
+// Query Handler
+@RequestHandler(GetProductsQuery)
+export class GetProductsQueryHandler
+	implements IQueryHandler<GetProductsQuery, Product[]>
+{
+	constructor(private readonly _dbContext: DbContext) {}
+
+	public async handle(query: GetProductsQuery): Promise<Product[]> {
+		const products = await this._dbContext.products
+			.where((x) => x.categoryId === query.categoryId)
+			.toArray();
+
+		return products;
+	}
+}
+
+// Usage
+const mediator = Injector.GetRequiredService(Mediator, context);
+const products = await mediator.send(new GetProductsQuery(categoryId));
+```
+
+Here we have a GetProductsQuery query that takes a category ID and returns a list of products that belong to that category. The GetProductsQueryHandler is responsible for handling the query and executing the appropriate logic, which in this case involves retrieving data from a database context.
+
+Finally, we can use the Mediator to send the GetProductsQuery and get the desired list of products.

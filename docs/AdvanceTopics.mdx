@@ -1,0 +1,35 @@
+- Overriding publish behavior
+
+My dear friend. To extend the publishCore method, you'll first need to extend the Mediator class, which is the heart of Tiny MediatR. You can do this by creating a new class that extends the Mediator class and then override the publishCore method with your custom implementation.
+
+To ensure that your extended Mediator class is used instead of the default Mediator class, you'll need to register it with the dependency injection container of your choice. In this example, let's assume that you're using Tiny Injector.
+
+Here are the steps you'll need to follow:
+
+Create a new class that extends the Mediator class:
+
+```ts
+class CustomMediator extends Mediator {
+	protected async publishCore<TNotification extends INotification>(
+		handlers: INotificationHandler<TNotification>[],
+		notification: TNotification
+	) {
+		// Your custom implementation of the publishCore method goes here.
+	}
+}
+```
+
+The default implementation of the publishCore method is as follows:
+
+```ts
+class Mediator {
+	protected async publishCore<TNotification extends INotification>(
+		handlers: INotificationHandler<TNotification>[],
+		notification: TNotification
+	) {
+		for (const item of handlers) {
+			await item.handle(notification);
+		}
+	}
+}
+```

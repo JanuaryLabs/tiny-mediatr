@@ -1,0 +1,11 @@
+- Mediator: The Mediator class is the central class in Tiny MediatR that handles the dispatching of requests and notifications to their respective handlers. To use the Mediator class, simply create an instance of the class and call the send or publish method to send a request or notification to their respective handlers.
+
+- IRequest: The IRequest interface defines the contract for a request that is sent to a request handler. To create a new request, simply implement the IRequest interface and provide the necessary properties and methods.
+
+- IRequestHandler: The IRequestHandler interface defines the contract for a request handler that handles a specific request type. To create a new request handler, simply implement the IRequestHandler interface and provide the necessary methods.
+
+- INotification: The INotification interface defines the contract for a notification that is sent to a notification handler. To create a new notification, simply implement the INotification interface and provide the necessary properties and methods.
+
+- INotificationHandler: The INotificationHandler interface defines the contract for a notification handler that handles a specific notification type. To create a new notification handler, simply implement the INotificationHandler interface and provide the necessary methods.
+
+- IPipelineBehavior: The IPipelineBehavior interface defines the contract for a pipeline behavior that can be added to the request pipeline. To create a new pipeline behavior, simply implement the IPipelineBehavior interface and provide the necessary methods.

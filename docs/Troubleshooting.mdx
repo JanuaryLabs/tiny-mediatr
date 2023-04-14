@@ -1,0 +1,31 @@
+In the magical realm of Tiny MediatR and Tiny Injector, even the most daunting troubleshooting tasks can be tackled with ease and grace.
+
+One common issue is when a user forgets to register the Mediator class as a scoped service in the dependency injection container. This can lead to confusion and frustration, but fear not! With a quick registration of the Mediator class, your code will be back up and running in no time.
+
+```ts
+import { Context, Injector } from "tiny-injector";
+import { Mediator } from "tiny-mediatr";
+
+// Register Mediator as a scoped service
+Injector.AddScoped(Mediator);
+```
+
+Another common issue is when a user forgets to import the necessary handlers into the project entry file. This can cause headaches and confusion, but have no fear! By importing the necessary handlers, you can ensure that your application is able to resolve the dependencies of the request and notification handlers.
+
+```ts
+import "./handlers/example-request.handler";
+import "./handlers/example-notification.handler";
+```
+
+Finally, a user may forget to add Context as a scoped service in the dependency injection container. This can be a tricky issue to identify, but never fear! By adding Context as a scoped service, you can ensure that your application is able to resolve the dependencies of the request and notification handlers with ease.
+
+More about [Context](https://docs.page/ezzabuzaid/tiny-injector/Context)
+
+```ts
+import { Context, Injector } from "tiny-injector";
+
+// Register Context as a scoped service
+Injector.AddScoped(Context);
+```
+
+So the next time you encounter a troubleshooting issue while using Tiny MediatR and Tiny Injector, don't panic! By taking these simple steps, you can quickly and effectively resolve the issue and keep your code running smoothly and efficiently.

@@ -1,0 +1,71 @@
+In the magical kingdom of Tiny MediatR, even the most powerful wizards sometimes need help. That's why we've compiled a list of frequently asked questions to help guide you on your journey.
+
+> Q: Can I use Tiny MediatR with my favorite framework?
+
+Absolutely! Tiny MediatR is designed to be lightweight and flexible, allowing it to work seamlessly with a wide range of frameworks and libraries.
+
+> Q: How do I know when to use a request vs a notification?
+
+Requests are typically used for actions that require a response, such as retrieving data or performing a calculation. Notifications are used for events or messages that don't require a response, such as sending an email or logging an event.
+
+> Q: Do I need to register handlers with Tiny MediatR?
+
+Yes, handlers must be registered with Tiny MediatR in order to be invoked. This can be done using the RequestHandler or NotificationHandler decorators, or by manually registering the handlers using the Injector class.
+
+> Q: How do I handle errors in Tiny MediatR?
+
+Errors can be handled using try-catch blocks or by creating custom error handlers that implement the IPipelineBehavior interface. You can also override the publishCore method in the Mediator class to customize error handling behavior.
+
+> Q: How can I extend Tiny MediatR to fit my specific needs?
+
+Tiny MediatR is designed to be easily extensible. You can extend the Mediator class to customize its behavior, or create your own wrappers or decorators to add additional functionality.
+
+> Q: Can Tiny MediatR handle multiple requests or notifications at the same time?
+
+Yes, Tiny MediatR is designed to handle multiple requests or notifications simultaneously using the appropriate async programming techniques such as async-await or promises.
+
+> Q: Can I use Tiny MediatR with TypeScript?
+
+Absolutely! Tiny MediatR is built using TypeScript and is designed to be fully compatible with TypeScript projects.
+
+> Q: How do I handle dependencies with Tiny MediatR?
+
+Dependencies can be handled using the Injector class, which provides a simple, lightweight dependency injection container. You can register your dependencies using the AddScoped, AddTransient, or AddSingleton methods, and then use the GetService or GetRequiredService methods to retrieve them.
+
+> Q: Is Tiny MediatR thread-safe?
+
+Yes, Tiny MediatR is designed to be thread-safe and can be used in multi-threaded applications without any issues.
+
+> Q: How do I test my Tiny MediatR code?
+
+Testing Tiny MediatR code is similar to testing any other code. You can use popular testing frameworks such as Jest or Mocha to create unit tests for your handlers and other components. You can also create integration tests to ensure that your entire application is working as expected.
+
+> Q: Is there a limit to the number of handlers that can be registered?
+
+There is no hard limit on the number of handlers that can be registered, but keep in mind that registering a large number of handlers can impact performance. It's recommended to only register the handlers that are necessary for your application.
+
+> Q: Can I use Tiny MediatR with other dependency injection frameworks?
+
+While Tiny MediatR is designed to work with the Tiny Injector framework, it can be used with other dependency injection frameworks as well. However, keep in mind that the lifetime of the injected services may not be managed correctly if used with a different framework. It's recommended to use Tiny Injector for the best compatibility and performance.
+
+We hope these FAQs have been helpful in your journey through the magical kingdom of Tiny MediatR. If you have any other questions or concerns, please don't hesitate to reach out to our community for support.
+
+> Q: What should I name my request classes?
+
+It's best to name your request classes according to their intent or the action they perform. For example, if you have a request class that retrieves a list of products, you could name it GetProductsRequest.
+
+> Q: What should I name my request handler classes?
+
+You should name your request handler classes based on the name of the request class they handle. For example, if you have a GetProductsRequest class, you could name the corresponding handler class GetProductsRequestHandler.
+
+> Q: What should I name my notification classes?
+
+It's best to name your notification classes according to the event or message they represent. For example, if you have a notification class that informs subscribers that an order has been placed, you could name it OrderPlacedNotification.
+
+> Q: What should I name my notification handler classes?
+
+You should name your notification handler classes based on the name of the notification class they handle. For example, if you have an OrderPlacedNotification class, you could name the corresponding handler class OrderPlacedNotificationHandler.
+
+> Q: What should I name my pipeline behavior classes?
+
+It's best to name your pipeline behavior classes according to the aspect of the pipeline they modify. For example, if you have a pipeline behavior that logs requests, you could name it LoggingPipelineBehavior.

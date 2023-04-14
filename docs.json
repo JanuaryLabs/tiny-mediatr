@@ -1,14 +1,17 @@
 {
-	"name": "Tiny Injector",
+	"name": "Tiny MediatR",
 	"noindex": false,
 	"twitter": "ezzabuzaid",
-	"googleTagManager": "GTM-W4SVSKL",
+	"googleTagManager": "GTM-KN8NNR4",
 	"sidebar": [
 		["Introduction", "/"],
 		["Getting Started", "/GettingStarted"],
 		["Concepts", "/Concepts"],
 		["Usage", "/Usage"],
+		["CQS", "/CQS"],
 		["Testing", "/Testing"],
-		["ErrorHandling", "/ErrorHandling"]
+		["ErrorHandling", "/ErrorHandling"],
+		["Troubleshooting", "/Troubleshooting"],
+		["APIReference", "/APIReference"]
 	]
 }
