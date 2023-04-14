@@ -1,0 +1,89 @@
+# Concepts: Unraveling the Mysteries of Tiny MediatR 📚🔮
+
+In the fantastical realm of Tiny MediatR, there are a few key concepts that you must understand to harness its full power. Let's dive into the magical world of Commands, Handlers, Notifications, and Pipelines, and unravel the mysteries that make this enchanted land so enchanting! 🌟
+
+## Commands: The Little Messengers 💌🏃‍♂️
+
+Commands, or IRequest objects, are the little messengers that carry vital information about the actions your application needs to perform. They're like tiny scrolls filled with magical spells that make things happen in your enchanted kingdom.
+
+When you create an IRequest, you're essentially crafting a spell that instructs your application to perform a specific task. These IRequest objects can be simple or complex, depending on the intricacy of the action you wish to perform. But one thing is for sure: when a command is sent through the magical world of Tiny MediatR, it always has a purpose and knows where to go!
+
+Example of a simple command:
+
+```ts
+class MyRequest implements IRequest<string> {
+	constructor(public name: string) {}
+}
+```
+
+Once your IRequest objects are ready, they eagerly await their moment to shine and set forth on their missions! 💌✨
+
+# Handlers: The Brave Knights ⚔️🛡️
+
+Handlers, or the IRequestHandler implementations, are the brave knights of Tiny MediatR's kingdom. Whenever they receive a command (IRequest), they leap into action and skillfully execute the requested task. They're the ones who make the magic happen! 🌟
+
+When you create a handler, you're essentially choosing a courageous knight to complete a specific quest. Each IRequestHandler must be paired with its corresponding IRequest, as they share a deep bond that ensures they work harmoniously together.
+
+Example of a simple handler:
+
+```ts
+@RequestHandler(MyRequest)
+class MyRequestHandler implements IRequestHandler<MyRequest, string> {
+	async handle(request: MyRequest): Promise<string> {
+		return `Hello, ${request.name}! Welcome to the enchanted world of Tiny MediatR!`;
+	}
+}
+```
+
+With their IRequest in hand, these valiant handlers venture forth, always ready to tackle the challenges that lie ahead and bring the magic of Tiny MediatR to life! 🏰🔮
+
+# Notifications: Trusty Heralds 📯📣
+
+In the magical realm of Tiny MediatR, Notifications (INotification) are the trusty heralds that deliver important messages throughout the kingdom. They ensure that everyone stays informed and up-to-date on the latest happenings. They carry news, events, and updates, making sure no one misses out on vital information.
+
+To ensure the word spreads far and wide, there are INotificationHandlers, the skillful messengers who take on the responsibility of sharing notifications with the subjects of the kingdom. Each INotificationHandler is specialized in handling a specific type of notification.
+
+Here's an example of a notification and its handler:
+
+```ts
+// Notification
+class MyNotification implements INotification {
+	constructor(public readonly message: string) {}
+}
+
+// Handler
+@NotificationHandler(MyNotification)
+class MyNotificationHandler implements INotificationHandler<MyNotification> {
+	async handle(notification: MyNotification): Promise<void> {
+		console.log(
+			`Hark, good people! A new message has arrived: ${notification.message}`
+		);
+	}
+}
+```
+
+With the notifications and their handlers working in perfect harmony, the kingdom remains connected and informed, ensuring nothing goes amiss in the land of Tiny MediatR! 🌐🏰
+
+# Pipelines: Magical Portals ✨🌀
+
+In the enchanted land of Tiny MediatR, Pipelines (Behaviors) are like magical portals that transport IRequest and INotification instances between their handlers. They're the secret ingredient that makes the kingdom run smoothly and efficiently, allowing for powerful customization and flexibility.
+
+These pipelines enable you to create IRequestPreProcessor and IRequestPostProcessor implementations, which allow you to perform actions before and after your IRequest is handled. This can be helpful for tasks such as logging, validation, or any other actions you'd like to execute throughout your IRequest's journey.
+
+Here's an example of a pipeline, a pre-processor, and a post-processor:
+
+```ts
+class MyPipeline extends IPipelineBehavior<MyCommand, string> {
+	async handle(
+		request: MyCommand,
+		next: RequestHandlerDelegate<string>
+	): Promise<string> {
+		console.log(
+			`The magical portal is opening! 🌀✨ Request: ${JSON.stringify(request)}`
+		);
+		const result = await next();
+		console.log(`The magical portal is closing! 🌀✨ Result: ${result}`);
+		return result;
+	}
+}
+```

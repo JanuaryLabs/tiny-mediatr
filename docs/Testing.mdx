@@ -1,0 +1,102 @@
+First, consider a simple request handler for demonstration purposes:
+
+```ts
+// handlers/ExampleRequestHandler.ts
+
+import { IRequestHandler, IRequest } from "tiny-mediatr";
+import { Injectable } from "tiny-injector";
+
+@Injectable()
+export class ExampleRequest implements IRequest<string> {
+	constructor(public name: string) {}
+}
+
+@Injectable()
+export class ExampleRequestHandler
+	implements IRequestHandler<ExampleRequest, string>
+{
+	async handle(request: ExampleRequest): Promise<string> {
+		return `Hello, ${request.name}!`;
+	}
+}
+```
+
+Now, let's create a test file for this request handler using Jest:
+
+```ts
+// tests/ExampleRequestHandler.test.ts
+
+import {
+	ExampleRequest,
+	ExampleRequestHandler,
+} from "../handlers/ExampleRequestHandler";
+import { Context } from "tiny-injector";
+
+describe("ExampleRequestHandler", () => {
+	const context = new Context();
+
+	it("should work with the mediator", async () => {
+		const mediator = Injector.GetRequiredService(Mediator, context);
+		const request = new ExampleRequest("Bob");
+
+		const response = await mediator.send(request);
+
+		expect(response).toEqual("Hello, Bob!");
+	});
+});
+```
+
+Suppose we have the following simple notification and handler:
+
+```ts
+// handlers/ExampleNotification.ts
+
+import { INotification, INotificationHandler } from "tiny-mediatr";
+import { Injectable } from "tiny-injector";
+
+@Injectable()
+export class ExampleNotification implements INotification {
+	constructor(public message: string) {}
+}
+
+@Injectable()
+export class ExampleNotificationHandler
+	implements INotificationHandler<ExampleNotification>
+{
+	async handle(notification: ExampleNotification): Promise<void> {
+		console.log(notification.message);
+	}
+}
+```
+
+To test this Notification Handler with Jest, create a test file:
+
+```ts
+// tests/ExampleNotificationHandler.test.ts
+
+import { ExampleNotification } from "../handlers/ExampleNotification";
+import { Context } from "tiny-injector";
+import { Mediator } from "tiny-mediatr";
+
+describe("ExampleNotificationHandler", () => {
+	const context = new Context();
+
+	it("should log the message from the notification", async () => {
+		// Arrange
+		const mediator = Injector.GetRequiredService(Mediator, context);
+		const notification = new ExampleNotification("Hello, Alice!");
+
+		// Use jest.spyOn to track console.log calls
+		const consoleSpy = jest.spyOn(console, "log");
+
+		// Act
+		await mediator.publish(notification);
+
+		// Assert
+		expect(consoleSpy).toHaveBeenCalledWith("Hello, Alice!");
+
+		// Clean up the spy
+		consoleSpy.mockRestore();
+	});
+});
+```

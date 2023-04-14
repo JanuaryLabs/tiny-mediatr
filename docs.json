@@ -1,0 +1,14 @@
+{
+	"name": "Tiny Injector",
+	"noindex": false,
+	"twitter": "ezzabuzaid",
+	"googleTagManager": "GTM-W4SVSKL",
+	"sidebar": [
+		["Introduction", "/"],
+		["Getting Started", "/GettingStarted"],
+		["Concepts", "/Concepts"],
+		["Usage", "/Usage"],
+		["Testing", "/Testing"],
+		["ErrorHandling", "/ErrorHandling"]
+	]
+}

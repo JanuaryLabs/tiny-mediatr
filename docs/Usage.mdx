@@ -1,0 +1,126 @@
+# Usage: Adventures in Tiny MediatR 🧙‍♂️
+
+Embark on an adventure through the magical world of Tiny MediatR with this detailed guide on how to use its enchanting powers in your application. Let's begin!
+
+Step 1: Setup the Tiny Injector 🧪
+Before we dive into the realm of Tiny MediatR, we need to set up the magical elixir that powers everything: Tiny Injector. Make sure you've installed the tiny-injector package and follow these instructions:
+
+import { Injector } from "tiny-injector";
+
+```ts
+// Register your services and handlers here
+// For example:
+Injector.AddSingleton(MyService);
+```
+
+Step 2: Creating Commands and Handlers 💌🏇
+Now, let's create our little messengers, the Commands, and their brave protectors, the Handlers. Remember, Commands are IRequest objects, and Handlers are IRequestHandler implementations.
+
+For example, let's create a command to fetch a magical greeting:
+
+```ts
+class FetchGreetingCommand extends IRequest<string> {
+	constructor(public readonly name: string) {
+		super();
+	}
+}
+```
+
+And the handler that fulfills this noble quest:
+
+```ts
+@RequestHandler(FetchGreetingCommand)
+class FetchGreetingHandler extends IRequestHandler<
+	FetchGreetingCommand,
+	string
+> {
+	async handle(request: FetchGreetingCommand): Promise<string> {
+		return `Greetings, ${request.name}! Welcome to the mystical world of Tiny MediatR! 🌟`;
+	}
+}
+```
+
+Register your handler with Tiny Injector:
+
+```ts
+Injector.AddScoped(FetchGreetingHandler);
+```
+
+Step 3: Conjuring Notifications and Notification Handlers 📯🧚‍♀️
+In the enchanted world of Tiny MediatR, Notifications keep the kingdom informed of important happenings. Let's create a magical Notification and its valiant Notification Handler to spread the news.
+
+For instance, let's make a notification to announce a grand feast:
+
+```ts
+class GrandFeastAnnouncement extends INotification {
+	constructor(public readonly feastName: string) {
+		super();
+	}
+}
+```
+
+Now, create the noble Notification Handler to share the joyous news with the kingdom:
+
+```ts
+@RequestHandler(GrandFeastAnnouncement)
+class GrandFeastAnnouncementHandler extends INotificationHandler<GrandFeastAnnouncement> {
+	async handle(notification: GrandFeastAnnouncement): Promise<void> {
+		console.log(
+			`Hear ye, hear ye! A grand feast, ${notification.feastName}, is being held in the realm of Tiny MediatR! 🍖🍇`
+		);
+	}
+}
+```
+
+Register this valiant handler with the magical Tiny Injector:
+
+Step 4: Unleashing the Power of Pipelines 🌪🔮
+Pipelines are the enchanted portals that whisk Commands and Notifications between Handlers. To create your own bewitching pipeline, you'll need to extend the IPipelineBehavior class.
+
+For example, let's create a pipeline to add a touch of magic to our greetings:
+
+```ts
+class MagicalGreetingPipeline extends IPipelineBehavior<
+	FetchGreetingCommand,
+	string
+> {
+	async handle(
+		request: FetchGreetingCommand,
+		next: RequestHandlerDelegate<string>
+	): Promise<string> {
+		const response = await next();
+		return `${response} ✨🧙‍♂️`;
+	}
+}
+```
+
+Remember to register this wondrous pipeline with the powerful Tiny Injector:
+
+```ts
+Injector.AddScoped(MagicalGreetingPipeline);
+```
+
+Step 5: Tapping into the Magic of Tiny MediatR 🎩✨
+Now that you have unraveled the mysteries of Commands, Handlers, Notifications, and Pipelines, you can truly master the art of Tiny MediatR.
+
+To bring your magical creation to life, summon the Mediator from the Tiny Injector and send your Commands or publish your Notifications.
+
+For example, let's send a FetchGreetingCommand to retrieve an enchanted greeting:
+
+```ts
+const mediator = Injector.GetRequiredService(Mediator);
+const command = new FetchGreetingCommand("John Doe");
+const greeting = await mediator.send(command);
+console.log(greeting); // "Greetings, John Doe! ✨🧙‍♂️"
+```
+
+Or, let's announce the arrival of a grand feast using our GrandFeastAnnouncement:
+
+```ts
+const announcement = new GrandFeastAnnouncement("The Royal Banquet");
+await mediator.publish(announcement); // "Hear ye, hear ye! A grand feast, The Royal Banquet, is being held in the realm of Tiny MediatR! 🍖🍇"
+```
+
+By default, Tiny MediatR will register your Notification Handlers and Request Handlers with the Tiny Injector as scoped services. This means that each time they're summoned, a new instance will be conjured, ensuring that the magic remains fresh and potent!
+
+And there you have it, my dear adventurer! You have successfully journeyed through the mystical land of Tiny MediatR and unlocked its many enchanting secrets. May your newfound powers serve you well as you create wondrous applications that dazzle and delight! 🌟🔮🧚‍♀️

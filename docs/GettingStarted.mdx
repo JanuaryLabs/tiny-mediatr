@@ -1,0 +1,108 @@
+# Getting Started with Tiny-MediatR: A Wondrous Adventure Awaits!
+
+Gather around, curious developers! Our whimsical journey through the enchanted land of Tiny-MediatR continues as we embark on the next phase of our adventure: getting started with the library. Fear not, for the path ahead is filled with excitement, discovery, and perhaps even a touch of magic. ✨
+
+## 1. Installing the Magical Potion 🧪🔮
+
+Before we can explore the wonders of Tiny-MediatR, we must first summon the library into our project. With a simple incantation, we can conjure the package and add it to our application:
+
+```bash
+npm install tiny-mediatr
+```
+
+## 2. Crafting Your Command Scrolls 📜✍️
+
+With Tiny-MediatR installed, it's time to assemble our cast of characters. First, let's create a command that will carry our request through the magical kingdom:
+
+```ts
+import { IRequest } from "./mediator";
+
+export class SampleRequest implements IRequest<string> {
+	constructor(public message: string) {}
+}
+```
+
+## 3. Summoning Your Brave Handlers 🦸‍♂️🛡️
+
+Next, we'll summon a handler to carry out the command's bidding:
+
+```ts
+import { IRequestHandler, RequestHandler } from "./mediator";
+
+@RequestHandler(SampleRequest)
+export class SampleRequestHandler
+	implements IRequestHandler<SampleRequest, string>
+{
+	async handle(request: SampleRequest): Promise<string> {
+		return `Request handled: ${request.message}`;
+	}
+}
+```
+
+## 4. Casting Your Spell 🧙‍♂️🧙‍♀️
+
+```ts
+// SampleNotification.ts
+import {
+	INotification,
+	INotificationHandler,
+	NotificationHandler,
+} from "./mediator";
+
+export class SampleNotification implements INotification {
+	constructor(public message: string) {}
+}
+
+@NotificationHandler(SampleNotification)
+export class FirstSampleNotificationHandler
+	implements INotificationHandler<SampleNotification>
+{
+	async handle(notification: SampleNotification): Promise<void> {
+		console.log(
+			`FirstSampleNotificationHandler:Notification handled: ${notification.message}`
+		);
+	}
+}
+@NotificationHandler(SampleNotification)
+export class SecondSampleNotificationHandler
+	implements INotificationHandler<SampleNotification>
+{
+	async handle(notification: SampleNotification): Promise<void> {
+		console.log(
+			`SecondSampleNotificationHandler:Notification handled: ${notification.message}`
+		);
+	}
+}
+```
+
+## 5. Unleashing the Power of Tiny-MediatR
+
+With our command and handler in place, it's time to witness the magic of Tiny-MediatR in action. Let's create an instance of the Mediator class and send our GreetCommand on its merry way:
+
+```ts
+(async () => {
+	// Register the Mediator
+	Injector.AddScoped(Mediator);
+
+	// Create a new context
+	const context = new Context();
+
+	// Resolve the Mediator instance
+	const mediator = Injector.GetRequiredService(Mediator, context);
+
+	// Send a request
+	const request = new SampleRequest("Hello, World!");
+	const response = await mediator.send<string>(request);
+	console.log(response); // Output: Request handled: Hello, World!
+
+	// Publish a notification
+	const notification = new SampleNotification("Hello, World!");
+	await mediator.publish(notification); // Output: Notification handled: Hello, World!
+})();
+```
+
+## 6. Exploring Further: Notifications and Pipelines
+
+Our adventure doesn't end here! The enchanted land of Tiny-MediatR has many more wonders to discover, like notifications and pipelines. As you venture forth, you'll find that these powerful features can help you create even more magical applications.
+
+And there you have it, brave developer! You're now well on your way to becoming a master of Tiny-MediatR. May your journey be filled with excitement, discovery, and endless possibilities! 🚀🌟
