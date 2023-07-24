@@ -7,7 +7,7 @@ Gather around, curious developers! Our whimsical journey through the enchanted l
 Before we can explore the wonders of Tiny-MediatR, we must first summon the library into our project. With a simple incantation, we can conjure the package and add it to our application:
 
 ```bash
-npm install tiny-mediatr
+npm i @faslh/tiny-mediatr
 ```
 
 ## 2. Crafting Your Command Scrolls 📜✍️
@@ -18,7 +18,7 @@ With Tiny-MediatR installed, it's time to assemble our cast of characters. First
 import { IRequest } from "./mediator";
 
 export class SampleRequest implements IRequest<string> {
-	constructor(public message: string) {}
+  constructor(public message: string) {}
 }
 ```
 
@@ -31,11 +31,11 @@ import { IRequestHandler, RequestHandler } from "./mediator";
 
 @RequestHandler(SampleRequest)
 export class SampleRequestHandler
-	implements IRequestHandler<SampleRequest, string>
+  implements IRequestHandler<SampleRequest, string>
 {
-	async handle(request: SampleRequest): Promise<string> {
-		return `Request handled: ${request.message}`;
-	}
+  async handle(request: SampleRequest): Promise<string> {
+    return `Request handled: ${request.message}`;
+  }
 }
 ```
 
@@ -44,34 +44,34 @@ export class SampleRequestHandler
 ```ts
 // SampleNotification.ts
 import {
-	INotification,
-	INotificationHandler,
-	NotificationHandler,
+  INotification,
+  INotificationHandler,
+  NotificationHandler,
 } from "./mediator";
 
 export class SampleNotification implements INotification {
-	constructor(public message: string) {}
+  constructor(public message: string) {}
 }
 
 @NotificationHandler(SampleNotification)
 export class FirstSampleNotificationHandler
-	implements INotificationHandler<SampleNotification>
+  implements INotificationHandler<SampleNotification>
 {
-	async handle(notification: SampleNotification): Promise<void> {
-		console.log(
-			`FirstSampleNotificationHandler:Notification handled: ${notification.message}`
-		);
-	}
+  async handle(notification: SampleNotification): Promise<void> {
+    console.log(
+      `FirstSampleNotificationHandler:Notification handled: ${notification.message}`
+    );
+  }
 }
 @NotificationHandler(SampleNotification)
 export class SecondSampleNotificationHandler
-	implements INotificationHandler<SampleNotification>
+  implements INotificationHandler<SampleNotification>
 {
-	async handle(notification: SampleNotification): Promise<void> {
-		console.log(
-			`SecondSampleNotificationHandler:Notification handled: ${notification.message}`
-		);
-	}
+  async handle(notification: SampleNotification): Promise<void> {
+    console.log(
+      `SecondSampleNotificationHandler:Notification handled: ${notification.message}`
+    );
+  }
 }
 ```
 
@@ -81,23 +81,23 @@ With our command and handler in place, it's time to witness the magic of Tiny-Me
 
 ```ts
 (async () => {
-	// Register the Mediator
-	Injector.AddScoped(Mediator);
+  // Register the Mediator
+  Injector.AddScoped(Mediator);
 
-	// Create a new context
-	const context = new Context();
+  // Create a new context
+  const context = new Context();
 
-	// Resolve the Mediator instance
-	const mediator = Injector.GetRequiredService(Mediator, context);
+  // Resolve the Mediator instance
+  const mediator = Injector.GetRequiredService(Mediator, context);
 
-	// Send a request
-	const request = new SampleRequest("Hello, World!");
-	const response = await mediator.send<string>(request);
-	console.log(response); // Output: Request handled: Hello, World!
+  // Send a request
+  const request = new SampleRequest("Hello, World!");
+  const response = await mediator.send<string>(request);
+  console.log(response); // Output: Request handled: Hello, World!
 
-	// Publish a notification
-	const notification = new SampleNotification("Hello, World!");
-	await mediator.publish(notification); // Output: Notification handled: Hello, World!
+  // Publish a notification
+  const notification = new SampleNotification("Hello, World!");
+  await mediator.publish(notification); // Output: Notification handled: Hello, World!
 })();
 ```
 
